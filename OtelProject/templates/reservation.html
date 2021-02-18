@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RESERVATION</title>
+    
+    <style>
+        h1{
+            text-align: center;
+        }
+        table, th, td {
+            border: 3px solid black;
+            border-collapse: collapse;
+            margin-left: 43%;
+        }
+        th,td{
+            font-size: 30px;
+            padding-right: 10px;
+            padding-inline-start: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div>
+            <h1>RESERVATION</h1>
+            <table id="tablo">
+                <tr>
+                    <th>ID</th>
+                    <th>PRICE</th>
+                    <th>INFO</th>
+                    
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>3</td>
+                    <td>king</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>2</td>
+                    <td>queen</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>1</td>
+                    <td>deluxe</td>
+                </tr>
+            </table>  
+        </div>
+        <br><br>
+        <div id="islemler" style="text-align: center;">
+            
+            <input type="text" id="amount" value="" ><br>
+            <div style="padding-top: 30px;">
+                <button id="pay">Pay</button>
+                <button class="enableEthereumButton">Enable Ethereum</button>
+                <h2>Account: <span class="showAccount"></span></h2>
+            </div>    
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.4.1.js"
+	integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.2.6/dist/web3.min.js"></script>
+    <script type="text/javascript">
+
+        
+        //ENABLING METAMASK AND CONNECTING ACCOUNTS
+        const ethereumButton = document.querySelector('.enableEthereumButton');
+        const showAccount = document.querySelector('.showAccount');
+        ethereumButton.addEventListener('click', () => {
+        getAccount();
+        });
+       
+
+        var contract;
+		var address = "0x71D38c752d2817e077cB0606ce0BB085DE8173fF";
+        var abi =[
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "afterAccommodation",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "approvalToDispute",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "cancel_Check_In",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "changeOracleAddress",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "check_in",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "deposit_for_hotel",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "disputeCloseByOracle",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "expiredDispute",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "accomodationEndTime",
+				"type": "uint256"
+			}
+		],
+		"name": "getSharedMoney",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_roomId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_reservationPrice",
+				"type": "uint256"
+			}
+		],
+		"name": "making_Reservation",
+		"outputs": [],
+		"payable": true,
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "missedDeadlineCheck",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "missingService_1",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "oracleApproval",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_address",
+				"type": "address"
+			}
+		],
+		"name": "oracleDisapproval",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "reservationCancel",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [],
+		"name": "withdraw_for_hotel_deposit",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "getReservation",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "roomID",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "ReservationTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "ReservationPrice",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "CustomerAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "check_in_Status",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "CanCheck_in",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "hotel_balance_view",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "HotelOwner",
+		"outputs": [
+			{
+				"internalType": "address payable",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "returnRervationByAddress",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "returnTimeFarki",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	}
+];
+        web3 = new Web3(web3.currentProvider);
+		contract = new web3.eth.Contract(abi, address);
+
+         //FUNCTION THAT GETS ALL ACCOUNTS FROM METAMASK AND GETS ADDRESS OF WHAT WE SELECT
+         function getAccounts(callback) {
+                web3.eth.getAccounts((error,result) => {
+                    if (error) {
+                        console.log(error);
+                    } else {
+                        callback(result);
+                    }
+                });
+            }
+
+         //we send ether to our contract from hotel
+         $('#pay').click( function(){
+                getAccounts(function(result) {
+                    //print account that used by MetaMask provider
+                    console.log("From This Account: " + result[0]);
+                    
+                    var amt=5000000000000000;
+                   
+                    return contract.methods.deposit_for_hotel().send({from:result[0],value:amt}); 
+                });
+                //Bu sekilde kontrol edilebilir fakat bi onceki veriyi gosteriyor console.log(contract.methods.hotel_balance_view().call());
+            });
+
+        
+    
+    
+    </script>
+</body>
+
+
+</html>
